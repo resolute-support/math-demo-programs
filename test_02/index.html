@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- https://www.w3schools.com/graphics/game_intro.asp -->
+    <script type="text/javascript" src="index.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" type="text/css" href="main.css" />
+  </head>
+  <body onload="startGame()">
+    <script>
+      var myGamePiece;
+      var myObstacle;
+      vx = 20;
+      vy = -10;
+      gravity = 0.15;
+      damping = 0.7;
+      traction = 1;
+      paused = true;
+    </script>
+    <div id="success_modal" class="modal_success">
+      <div align="center">
+        <h3 class="heading">CORRECT!</h3>
+        <p>click next to carry on to the next section</p>
+        <button id="continue" class="continue_button">NEXT</button>
+      </div>
+    </div>
+    <div class="modal_options">
+      <div align="center">
+        <h3 class="instructions"><ul>Lesson 12: Trajectory calculations</ul></h3>
+        <p>Try hitting the green goal by tweaking the paramters below, and try win the game.</p>
+      </div>
+      <div align="left">
+        <div>
+          <input id="input_X" class="inputs" type="text" name="" value="10"><p style="display:inline">X axis location</p></br>
+          <input id="input_Y" class="inputs" type="text" name="" value="680"><p style="display:inline">Y axis location</p></br>
+          <input id="input_HS" class="inputs" type="text" name="" value="20"><p style="display:inline">horizontal speed</p></br>
+          <input id="input_VS" class="inputs" type="text" name="" value="-10"><p style="display:inline">vertical speed</p></br>
+        </div>
+        <div id="telemetry" style="display:none;">
+          <p><u> X, Y, Co-ordinates</u></p>
+          <p style="display:inline;">X:</p><p style="display:inline;" id="x_co"></p>
+          <br>
+          <p style="display:inline;">Y:</p><p style="display:inline;" id="y_co"></p>
+        </div>
+      </div>
+      <div align="center">
+        <button id="run_button" onclick="get_params();" class="continue_button">RUN</button>
+        <button id="toggle_button" onclick="toggle();" class="pause_button">play</button>
+      </div>
+    </div>
+  </body>
+</html>

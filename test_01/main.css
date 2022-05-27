@@ -1,0 +1,16 @@
+canvas {
+  border: 1px solid black;
+  background-size: 50px 50px;
+  background-image:
+    linear-gradient(to right, grey 1px, transparent 1px),
+    linear-gradient(to bottom, grey 1px, transparent 1px);
+}
+p {
+  margin: 0;
+}
+button {
+  width: 200px;
+  height: 100px;
+  padding: 20px;
+  font-size: 20px;
+}
