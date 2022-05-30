@@ -132,6 +132,7 @@ function get_params() {
   document.getElementById("toggle_button").innerHTML = "pause";
   document.getElementById("telemetry").style.display = "block";
   document.getElementById("toggle_button").style.display = "inline";
+  document.getElementById("reset_button").style.display = "inline";
   document.getElementById("run_button").innerHTML = "Running...";
   paused = false;
 }
