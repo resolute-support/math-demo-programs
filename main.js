@@ -1,67 +1,88 @@
-let ts;     //  time stamp
-let sp;     //  seconds passed
-let ots;    //  original time stamp
-let fps;    //  frames per second
-let ms;     // moving speed
-
-let canvas;
-let ctx;
+var ship = new Ship(0,0,50,50);
+var station = new Station(randomInt(-250,250),randomInt(-250,0),60,60);
 
 var ship_img = document.getElementById("spaceship");
 var station_img = document.getElementById("spacestation");
 
-let orig_x =randomInt(-300,300);          //-162
-let orig_y =randomInt(-300,300);          //-31
-
-var collision = false;
-
-// let orig_x = 200;
-// let orig_y = 200;
-
 var closebtns;
-let all_objects = [
-  new Ship(orig_x,orig_y,40,40),
-  new Station(randomInt(-300,300),randomInt(-300,300),60,60) //y:5 x:257
-];
+var distance;
 
-let obstacles = [];
+var orig_x = ship.x;
+var orig_y = ship.y;
+
+var move = false;
+var move_x;
+var move_y;
+var portion_y;
+var portion_x;
+var delta_x;
+var delta_y;
+
+function draw() {
+  ship.draw();
+}
 function init() {
   closebtns = document.getElementsByClassName("close");
-  var i;
+  canvas = document.getElementById("canvas");
+  ctx = canvas.getContext('2d');
   count();
-  canvas = document.getElementById("canvas")
-  ctx = canvas.getContext('2d');                       //create objects to use canvas
   ctx.translate(canvas.width/2, canvas.height/2);
   ctx.scale(1,-1);
   create_enviroment();
   draw();
-  //window.requestAnimationFrame(gameLoop);              //start animation
+  window.requestAnimationFrame(gameLoop);
 }
 function gameLoop() {
-  ctx.clearRect(canvas.width/-2, canvas.width/2, canvas.width*2, canvas.width*-2);   //clear canvas
 
-  sp = (ts - ots) / 1000;
-  ots = ts;                                           // Calculate fps
-  fps = Math.round(1 / sp);
+  euclidian_distance();
 
-  update_movement();
-  create_enviroment();
-  draw();
-  window.requestAnimationFrame(gameLoop);             //repeat and loop for the next frame
-}
-function create_enviroment() {
- add_axis();
-}
-function update_movement() {
-  for (var i = 0; i < all_objects.length; i++) {
-    all_objects[i].y -= 1;                          //gravity
+  if (move == true) {
+    clear_canvas();
+
+    if (ship.x < move_x) {
+      ship.x += portion_x;
+    }
+    else if (ship.x > move_x) {
+      ship.x -= portion_x;
+    }
+
+    if (ship.y < move_y*-1) {
+      ship.y += portion_y;
+    }
+    else if (ship.y > move_y*-1) {
+      ship.y -= portion_y;
+    }
+
+    if (ship.x == move_x && ship.y == move_y*-1) {
+      move = false;
+    }
+
+    create_enviroment();
+    draw();
+    console.log("x is "+ship.x+" and y is "+ship.y*-1);
+    check_for_collision();
   }
+  window.requestAnimationFrame(gameLoop);
 }
-function draw() {
-
-  for (var i = 0; i < all_objects.length; i++) {
-    all_objects[i].draw();
-  }
+async function set_move(x,y) {
+  move_x = x;
+  move_y = y;
+  var x_distance = dist(ship.x,x,0,0);
+  var y_distance = dist(0,0,ship.y,y);
+  portion_x = x_distance/20;
+  portion_y = y_distance/20;
+  move=true;
+}
+function resolveAfter1Seconds() {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve('resolved');
+    }, 1000);
+  });
+}
+async function move_ship(x,y) {
+  set_move(x,y);
+  const result = await resolveAfter1Seconds();
 }
 function count() {
     document.getElementById("count_mov").innerHTML = "movements used: " + closebtns.length;
@@ -79,11 +100,6 @@ function error_window(state, type) {
     document.getElementById("error_popup_id").style.display = "none";
   }
 }
-function remove_all() {
-  ctx.clearRect(canvas.width/-2, canvas.width/2, canvas.width*2, canvas.width*-2);   //clear canvas
-  create_enviroment();
-  draw();
-}
 function add_mov() {
   const newNode = document.createElement("li");
   const content = '<input class="input_commands"></input>'+'<span class="close">&times;</span>';
@@ -97,6 +113,23 @@ function add_mov() {
       count();
     });
   }
+}
+function reset_list() {
+  document.getElementById("MyUl").innerHTML = "";
+  count();
+  ship.x = orig_x;
+  ship.y = orig_y;
+  move=false;
+  clear_canvas();   //clear canvas
+  create_enviroment();
+  draw();
+}
+function create_enviroment() {
+  add_axis();
+  station.draw();
+}
+function draw() {
+  ship.draw();
 }
 function add_text(content, x, y) {
   ctx.save();
@@ -123,86 +156,71 @@ function randomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 function render() {
-  reset();
+  reset_position();
   console.clear();
   error_window("close");
-  var elements = document.getElementsByTagName("input")
+  var elements = document.getElementsByTagName("input");
   if (elements.length != 0) {
-    for (var i = 0; i < elements.length; i++) {
-        if(elements[i].value != "" || elements[i].value != null) {
-            var command = String(elements[i].value);
-            if (command.includes("shift") && command.includes("+") && command.includes("X")) {
-              var numb = command.match(/\d/g);
-              numb = numb.join("");
-              console.log("shift X up "+numb);
-              elements[i].style.color = "green";
-              translate_X(numb,"plus");
-            }
-            else if (command.includes("shift") && command.includes("-") && command.includes("X")) {
-              var numb = command.match(/\d/g);
-              numb = numb.join("");
-              console.log("shift X down "+numb);
-              elements[i].style.color = "green";
-              translate_X(numb,"minus");
-            }
-            else if (command.includes("shift") && command.includes("+") && command.includes("Y")) {
-              var numb = command.match(/\d/g);
-              numb = numb.join("");
-              console.log("shift Y up "+numb);
-              elements[i].style.color = "green";
-              translate_Y(numb,"plus");
-            }
-            else if (command.includes("shift") && command.includes("-") && command.includes("Y")) {
-              var numb = command.match(/\d/g);
-              numb = numb.join("");
-              console.log("shift Y down "+numb);
-              elements[i].style.color = "green";
-              translate_Y(numb,"minus");
-            }
-            else {
-              elements[i].style.color = "red";
-              error_window("open","syntax");
-              break;
-            }
-        }
-     }
-     ctx.clearRect(canvas.width/-2, canvas.width/2, canvas.width*2, canvas.width*-2);   //clear canvas
-     create_enviroment();
-     draw();
-     setTimeout(function(){ check_for_collision(); }, 100);
+    for (let i = 0; i < elements.length; i++) {
+      elements[i].style.color = "black";
+    }
+  }
+  if (elements.length != 0) {
+    for (let i = 0; i < elements.length; i++) {
+     setTimeout(function timer() {
+      if(elements[i].value != "" || elements[i].value != null) {
+                 var command = String(elements[i].value);
+                 if (command.includes("shift") && command.includes("+") && command.includes("X")) {
+                   var numb = command.match(/\d/g);
+                   numb = numb.join("");
+                   console.log("shift X up "+numb);
+                   elements[i].style.color = "green";
+                   move_ship(ship.x + numb,ship.y);
+                 }
+                 else if (command.includes("shift") && command.includes("-") && command.includes("X")) {
+                   var numb = command.match(/\d/g);
+                   numb = numb.join("");
+                   console.log("shift X down "+numb);
+                   elements[i].style.color = "green";
+                   move_ship(ship.x - numb,ship.y);
+                 }
+                 else if (command.includes("shift") && command.includes("+") && command.includes("Y")) {
+                   var numb = command.match(/\d/g);
+                   numb = numb.join("");
+                   console.log("shift Y up "+numb);
+                   elements[i].style.color = "green";
+                   move_ship(ship.x,ship.y+numb)
+                 }
+                 else if (command.includes("shift") && command.includes("-") && command.includes("Y")) {
+                   var numb = command.match(/\d/g);
+                   numb = numb.join("");
+                   console.log("shift Y down "+numb);
+                   elements[i].style.color = "green";
+                   move_ship(ship.x,ship.y-numb)
+                 }
+                 else {
+                   elements[i].style.color = "red";
+                   error_window("open","syntax");
+                 }
+             }
+ }, i * 1000);
+}
   }
   else {
     error_window("open","empty");
   }
 }
-function reset() {
-  all_objects[0].x = orig_x;
-  all_objects[0].y = orig_y;
-  ctx.clearRect(canvas.width/-2, canvas.width/2, canvas.width*2, canvas.width*-2);   //clear canvas
-  create_enviroment();
-  draw();
-}
-function reset_list() {
-  document.getElementById("MyUl").innerHTML = "";
-  count();
-  all_objects[0].x = orig_x;
-  all_objects[0].y = orig_y;
-  ctx.clearRect(canvas.width/-2, canvas.width/2, canvas.width*2, canvas.width*-2);   //clear canvas
+function reset_position() {
+  ship.x = orig_x;
+  ship.y = orig_y;
+  clear_canvas();   //clear canvas
   create_enviroment();
   draw();
 }
 function check_for_collision() {
-  const ship_w = all_objects[0].w;
-  const ship_h = all_objects[0].h;
-  const ship_x = all_objects[0].x;
-  const ship_y = all_objects[0].y;
 
-  const station_w = all_objects[1].w;
-  const station_h = all_objects[1].h;
-  const station_x = all_objects[1].x;
-  const station_y = all_objects[1].y;
 
-  if (rectIntersect(station_x, station_y, station_w, station_h, ship_x, ship_y, ship_w, ship_h)) {
+  if (rectIntersect(station.x, station.y, station.w, station.h, ship.x, ship.y, ship.w, ship.h)) {
     document.getElementById("welcome_modal").style.display = "block";
     document.getElementById("welcome_part").style.display = "none";
     document.getElementById("success_part").style.display = "block";
@@ -217,38 +235,56 @@ function rectIntersect(x1, y1, w1, h1, x2, y2, w2, h2) {
       return true;
     }
 }
-
-function translate_X(x, dir) {
-  ctx.clearRect(canvas.width/-2, canvas.width/2, canvas.width*2, canvas.width*-2);   //clear canvas
-  if (dir == "plus") {
-    all_objects[0].x = all_objects[0].x + parseInt(x);
-  }
-  else if (dir == "minus") {
-    all_objects[0].x = all_objects[0].x - parseInt(x);
-  }
-  create_enviroment();
-  draw();
+function clear_canvas() {
+  ctx.clearRect(canvas.width/-2, canvas.width/2, canvas.width*2, canvas.width*-2);
 }
-function translate_Y(y, dir) {
-  ctx.clearRect(canvas.width/-2, canvas.width/2, canvas.width*2, canvas.width*-2);   //clear canvas
-  if (dir == "plus") {
-    all_objects[0].y = all_objects[0].y - parseInt(y);
+function dist (x1, y1, x2, y2) {
+  var deltaX = diff(x1, x2);
+  var deltaY = diff(y1, y2);
+  var dist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+  return dist;
+};
+function diff (num1, num2) {
+  if (num1 > num2) {
+    return (num1 - num2);
+  } else {
+    return (num2 - num1);
   }
-  else if (dir == "minus") {
-    all_objects[0].y = all_objects[0].y + parseInt(y);
-  }
-  create_enviroment();
-  draw();
+};
+function euclidian_distance() {
+  document.getElementById("distance_calc").innerHTML = "Distance from spacestation: " + Math.round(dist(ship.x,ship.y,station.x,station.y*-1)) + " units";
 }
 
-/*
-function reflect_X() {
-ctx.clearRect(canvas.width/-2, canvas.width/2, canvas.width*2, canvas.width*-2);   //clear canvas
-}
-function reflect_Y() {
-ctx.clearRect(canvas.width/-2, canvas.width/2, canvas.width*2, canvas.width*-2);   //clear canvas
-}
-function reflect_XY() {
-ctx.clearRect(canvas.width/-2, canvas.width/2, canvas.width*2, canvas.width*-2);   //clear canvas
-}
-*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//

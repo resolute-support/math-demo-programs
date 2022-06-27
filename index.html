@@ -15,11 +15,13 @@
       <h1 style="padding-top:10px;padding-left:100px;color:white;">Fly back to the space-station!</h1>
       <canvas id="canvas" width="700" height="700"></canvas>
       <div class="buttons">
-        <h4 style="color:white;" id="count_mov">movements used:</h4>
+        <h4 style="color:white;" id="count_mov">movements used: 0</h4>
+        <h4 style="color:white;" id="distance_calc">Distance from spacestation:</h4>
         <ul>
           <li style="border-top-left-radius:16px;border-top-right-radius:16px;"><h3>Position shifts</h3></li>
         </ul>
         <ul id="MyUl">
+          <!--<li><input class="input_commands" value="shift(X+100)"/></li>-->
         </ul>
         <ul>
           <li>Add translation<span onclick="add_mov();" class="add">+</span></li>
@@ -27,41 +29,41 @@
       </br>
           <button style="margin-right:10px;" onclick="reset_list();" class="int_buttons">Reset</button>
           <button style="margin-left:10px;" onclick="render();" class="int_buttons">Run</button>
+          </br>
       </div>
-    </div>
-    <div id="welcome_modal" class="modal">
-      <div class="modal_body_content">
-        <div align="center">
-          <div id="welcome_part">
-            <h1>YOUR HELP IS REQUIRED!</h1>
-            <div class="clearfix">
-              <div class="img-container">
-                <lottie-player src="https://assets8.lottiefiles.com/packages/lf20_2kHQhR.json"  background="transparent"  speed="1"  style="width: 300px; height: 300px;"  loop  autoplay></lottie-player>
+      <div id="welcome_modal" class="modal">  <!-- temporarily disabled welcome screen -->
+        <div class="modal_body_content">
+          <div align="center">
+            <div id="welcome_part">
+              <h1>YOUR HELP IS REQUIRED!</h1>
+              <div class="clearfix">
+                <div class="img-container">
+                  <lottie-player src="https://assets8.lottiefiles.com/packages/lf20_2kHQhR.json"  background="transparent"  speed="1"  style="width: 300px; height: 300px;"  loop  autoplay></lottie-player>
+                </div>
+                  <div class="img-container">
+                    <p class="story" align="left">The Drej, a hostile race of aliens with bodies of pure energy are determined to wipe out humanity, the Drej destroy Earth in a massive attack, forcing the surviving humans to evacuate and flee into space.</p>
+                    <p class="story" align="left">Your goal is to help the remaining humans flee earth safely to the nearest spacestation</p>
+                  </div>
+                  <div class="img-container">
+                    <img src="assets/alien.png"/>
+                  </div>
               </div>
-                <div class="img-container">
-                  <p class="story" align="left">The Drej, a hostile race of aliens with bodies of pure energy are determined to wipe out humanity, the Drej destroy Earth in a massive attack, forcing the surviving humans to evacuate and flee into space.</p>
-                  <p class="story" align="left">Your goal is to help the remaining humans flee earth safely to the nearest spacestation</p>
-                </div>
-                <div class="img-container">
-                  <img src="assets/alien.png"/>
-                </div>
+              </br>
+              <button onclick="document.getElementById('welcome_modal').style.display = 'none';" class="int_buttons">OKAY! I GOT IT</button>
             </div>
-            </br>
-            <button onclick="document.getElementById('welcome_modal').style.display = 'none';" class="int_buttons">OKAY! I GOT IT</button>
-          </div>
-          <div style="display:none;" id="success_part">
-            <h1><u>CONGRATULATIONS</u></h1>
-            <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_atippmse.json"  background="transparent"  speed="1"  style="width: 300px; height: 300px;"  loop  autoplay></lottie-player>
-            <br>
-            <button onclick="location.reload();" class="int_buttons">Play Again?</button>
+            <div style="display:none;" id="success_part">
+              <h1><u>CONGRATULATIONS</u></h1>
+              <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_atippmse.json"  background="transparent"  speed="1"  style="width: 300px; height: 300px;"  loop  autoplay></lottie-player>
+              <br>
+              <button onclick="location.reload();" class="int_buttons">Play Again?</button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div style="display:none;" id="error_popup_id" class="error_popup">
-      <span onclick="error_window('close');" class="close_x">x</span>
-      <p id="err_msg" class="error_text"></p>
-    </div>
-    <script src="main.js"></script>
+      <div style="display:none;" id="error_popup_id" class="error_popup">
+        <span onclick="error_window('close');" class="close_x">x</span>
+        <p id="err_msg" class="error_text"></p>
+      </div>
+      <script src="main.js"></script>
   </body>
 </html>
