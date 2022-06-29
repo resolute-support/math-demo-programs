@@ -181,5 +181,12 @@ body {
   font-family: 'Montserrat', sans-serif;
 }
 
+.res_logo {
+  width: 300px;
+  position: fixed;
+  bottom: 200px;
+  right: 150px;
+}
+
 .close:hover {background: #bbb;}
 .add:hover {background: #bbb;}
